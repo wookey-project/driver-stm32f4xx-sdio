@@ -1,0 +1,243 @@
+#ifndef SDIO_REGS_H
+#define  SDIO_REGS_H
+
+#include "api/regutils.h"
+
+#define SDIO_BASE			0x40012C00
+
+#define r_CORTEX_M_SDIO_POWER		REG_ADDR(SDIO_BASE + 0x00)
+#define r_CORTEX_M_SDIO_CLKCR		REG_ADDR(SDIO_BASE + 0x04)
+#define r_CORTEX_M_SDIO_ARG		REG_ADDR(SDIO_BASE + 0x08)
+#define r_CORTEX_M_SDIO_CMD		REG_ADDR(SDIO_BASE + 0x0c)
+#define r_CORTEX_M_SDIO_RESPCMD	REG_ADDR(SDIO_BASE + 0x10)
+#define r_CORTEX_M_SDIO_RESP(N)	REG_ADDR(SDIO_BASE + 0x10 + (N) * 0x4)
+#define r_CORTEX_M_SDIO_DTIMER		REG_ADDR(SDIO_BASE + 0x24)
+#define r_CORTEX_M_SDIO_DLEN		REG_ADDR(SDIO_BASE + 0x28)
+#define r_CORTEX_M_SDIO_DCTRL		REG_ADDR(SDIO_BASE + 0x2c)
+#define r_CORTEX_M_SDIO_DCOUNT		REG_ADDR(SDIO_BASE + 0x30)
+#define r_CORTEX_M_SDIO_STA		REG_ADDR(SDIO_BASE + 0x34)
+#define r_CORTEX_M_SDIO_ICR		REG_ADDR(SDIO_BASE + 0x38)
+#define r_CORTEX_M_SDIO_MASK		REG_ADDR(SDIO_BASE + 0x3c)
+#define r_CORTEX_M_SDIO_FIFOCNT	REG_ADDR(SDIO_BASE + 0x48)
+#define r_CORTEX_M_SDIO_FIFO		REG_ADDR(SDIO_BASE + 0x80)
+
+/* SDIO power control register */
+#define SDIO_POWER_PWRCTRL_Pos		0
+#define SDIO_POWER_PWRCTRL_Msk		((uint32_t)3 << SDIO_POWER_PWRCTRL_Pos)
+#	define SDIO_POWER_PWRCTRL_POWER_OFF	0
+#	define SDIO_POWER_PWRCTRL_POWER_ON	3
+
+/* SDIO clock control register */
+#define SDIO_CLKCR_CLKDIV_Pos		0
+#define SDIO_CLKCR_CLKDIV_Msk		((uint32_t)0xff << SDIO_CLKCR_CLKDIV_Pos)
+#define SDIO_CLKCR_CLKEN_Pos		8
+#define SDIO_CLKCR_CLKEN_Msk		((uint32_t)1 << SDIO_CLKCR_CLKEN_Pos)
+#define SDIO_CLKCR_PWRSAV_Pos		9
+#define SDIO_CLKCR_PWRSAV_Msk		((uint32_t)1 << SDIO_CLKCR_PWRSAV_Pos)
+#define SDIO_CLKCR_BYPASS_Pos		10
+#define SDIO_CLKCR_BYPASS_Msk		((uint32_t)1 << SDIO_CLKCR_BYPASS_Pos)
+#define SDIO_CLKCR_WIDBUS_Pos		11
+#define SDIO_CLKCR_WIDBUS_Msk		((uint32_t)3 << SDIO_CLKCR_WIDBUS_Pos)
+#	define SDIO_CLKCR_WIDBUS_1WIDE_MODE	0
+#	define SDIO_CLKCR_WIDBUS_4WIDE_MODE	1
+#	define SDIO_CLKCR_WIDBUS_8WIDE_MODE	2
+#define SDIO_CLKCR_NEGEDGE_Pos		13
+#define SDIO_CLKCR_NEGEDGE_Msk		((uint32_t)1 << SDIO_CLKCR_NEGEDGE_Pos)
+#define SDIO_CLKCR_HWFC_EN_Pos		14
+#define SDIO_CLKCR_HWFC_EN_Msk		((uint32_t)1 << SDIO_CLKCR_HWFC_EN_Pos)
+
+/* SDIO command register */
+#define SDIO_CMD_CMDINDEX_Pos		0
+#define SDIO_CMD_CMDINDEX_Msk		((uint32_t)0x3f << SDIO_CMD_CMDINDEX_Pos)
+#define SDIO_CMD_WAITRESP_Pos		6
+#define SDIO_CMD_WAITRESP_Msk		((uint32_t)3 << SDIO_CMD_WAITRESP_Pos)
+#	define SDIO_CMD_WAITRESP_NO_REP		0
+#	define SDIO_CMD_WAITRESP_SHORT_REP	1
+#	define SDIO_CMD_WAITRESP_NO_REP2	2
+#	define SDIO_CMD_WAITRESP_LONG_REP	3
+#define SDIO_CMD_WAINTINT_Pos		8
+#define SDIO_CMD_WAINTINT_Msk		((uint32_t)1 << SDIO_CMD_WAINTINT_Pos)
+#define SDIO_CMD_WAITPEND_Pos		9
+#define SDIO_CMD_WAITPEND_Msk		((uint32_t)1 << SDIO_CMD_WAITPEND_Pos)
+#define SDIO_CMD_CPSMEN_Pos		10
+#define SDIO_CMD_CPSMEN_Msk		((uint32_t)1 << SDIO_CMD_CPSMEN_Pos)
+#define SDIO_CMD_SDIOSUSPEND_Pos	11
+#define SDIO_CMD_SDIOSUSPEND_Msk	((uint32_t)1 << SDIO_CMD_SDIOSUSPEND_Pos)
+#define SDIO_CMD_ENCMDCOMPL_Pos	12
+#define SDIO_CMD_ENCMDCOMPL_Msk	((uint32_t)1 << SDIO_CMD_ENCMDCOMPL_Pos)
+#define SDIO_CMD_NIEN_Pos		13
+#define SDIO_CMD_NIEN_Msk		((uint32_t)1 << SDIO_CMD_NIEN_Pos)
+#define SDIO_CMD_ATACMD_Pos		14
+#define SDIO_CMD_ATACMD_Msk		((uint32_t)1 << SDIO_CMD_ATACMD_Pos)
+
+/* SDIO command response register */
+#define SDIO_RESPCMD_RESPCMD_Pos	0
+#define SDIO_RESPCMD_RESPCMD_Msk	((uint32_t)0x3f << SDIO_RESPCMD_RESPCMD_Pos)
+
+/* SDIO data length register */
+#define SDIO_DLEN_DATALENGTH_Pos	0
+#define SDIO_DLEN_DATALENGTH_Msk	((uint32_t)0x1ffffff << SDIO_DLEN_DATALENGTH_Pos)
+
+/* SDIO data control register */
+#define SDIO_DCTRL_DTEN_Pos		0
+#define SDIO_DCTRL_DTEN_Msk		((uint32_t)1 << SDIO_DCTRL_DTEN_Pos)
+#define SDIO_DCTRL_DTDIR_Pos		1
+#define SDIO_DCTRL_DTDIR_Msk		((uint32_t)1 << SDIO_DCTRL_DTDIR_Pos)
+#	define SDIO_DCTRL_DTDIR_TO_CARD		0
+#	define SDIO_DCTRL_DTDIR_TO_CONTROLLER	1
+#define SDIO_DCTRL_DTMODE_Pos		2
+#define SDIO_DCTRL_DTMODE_Msk		((uint32_t)1 << SDIO_DCTRL_DTMODE_Pos)
+#	define SDIO_DCTRL_DTMODE_BLOCK		0
+#	define SDIO_DCTRL_DTMODE_STREAM		1
+#define SDIO_DCTRL_DMAEN_Pos		3
+#define SDIO_DCTRL_DMAEN_Msk		((uint32_t)1 << SDIO_DCTRL_DMAEN_Pos)
+#define SDIO_DCTRL_DBLOCKSIZE_Pos	4
+#define SDIO_DCTRL_DBLOCKSIZE_Msk	((uint32_t)0xf << SDIO_DCTRL_DBLOCKSIZE_Pos)
+#	define SDIO_DCTRL_GET_DATA_BLOCK_SIZE		(1 << get_reg(r_CORTEX_M_SDIO_DCTRL, SDIO_DCTRL_DBLOCKSIZE))
+#	define SDIO_DCTRL_SET_DATA_BLOCK_SIZE(N)	set_reg(r_CORTEX_M_SDIO_DCTRL, log2(N), SDIO_DCTRL_DBLOCKSIZE)
+#define SDIO_DCTRL_RWSTART_Pos		8
+#define SDIO_DCTRL_RWSTART_Msk		((uint32_t)1 << SDIO_DCTRL_RWSTART_Pos)
+#define SDIO_DCTRL_RWSTOP_Pos		9
+#define SDIO_DCTRL_RWSTOP_Msk		((uint32_t)1 << SDIO_DCTRL_RWSTOP_Pos)
+#define SDIO_DCTRL_RWMOD_Pos		10
+#define SDIO_DCTRL_RWMOD_Msk		((uint32_t)1 << SDIO_DCTRL_RWMOD_Pos)
+#define SDIO_DCTRL_SDIOEN_Pos		11
+#define SDIO_DCTRL_SDIOEN_Msk		((uint32_t)1 << SDIO_DCTRL_SDIOEN_Pos)
+
+/* SDIO data counter register */
+#define SDIO_DCOUNT_DATACOUNT_Pos	0
+#define SDIO_DCOUNT_DATACOUNT_Msk	((uint32_t)0x1ffffff << SDIO_DCOUNT_DATACOUNT_Pos)
+
+/* SDIO status register */
+#define SDIO_STA_CCRCFAIL_Pos		0
+#define SDIO_STA_CCRCFAIL_Msk		((uint32_t)1 << SDIO_STA_CCRCFAIL_Pos)
+#define SDIO_STA_DCRCFAIL_Pos		1
+#define SDIO_STA_DCRCFAIL_Msk		((uint32_t)1 << SDIO_STA_DCRCFAIL_Pos)
+#define SDIO_STA_CTIMEOUT_Pos		2
+#define SDIO_STA_CTIMEOUT_Msk		((uint32_t)1 << SDIO_STA_CTIMEOUT_Pos)
+#define SDIO_STA_DTIMEOUT_Pos		3
+#define SDIO_STA_DTIMEOUT_Msk		((uint32_t)1 << SDIO_STA_DTIMEOUT_Pos)
+#define SDIO_STA_TXUNDERR_Pos		4
+#define SDIO_STA_TXUNDERR_Msk		((uint32_t)1 << SDIO_STA_TXUNDERR_Pos)
+#define SDIO_STA_RXOVERR_Pos		5
+#define SDIO_STA_RXOVERR_Msk		((uint32_t)1 << SDIO_STA_RXOVERR_Pos)
+#define SDIO_STA_CMDREND_Pos		6
+#define SDIO_STA_CMDREND_Msk		((uint32_t)1 << SDIO_STA_CMDREND_Pos)
+#define SDIO_STA_CMDSENT_Pos		7
+#define SDIO_STA_CMDSENT_Msk		((uint32_t)1 << SDIO_STA_CMDSENT_Pos)
+#define SDIO_STA_DATAEND_Pos		8
+#define SDIO_STA_DATAEND_Msk		((uint32_t)1 << SDIO_STA_DATAEND_Pos)
+#define SDIO_STA_STBITERR_Pos		9
+#define SDIO_STA_STBITERR_Msk		((uint32_t)1 << SDIO_STA_STBITERR_Pos)
+#define SDIO_STA_DBCKEND_Pos		10
+#define SDIO_STA_DBCKEND_Msk		((uint32_t)1 << SDIO_STA_DBCKEND_Pos)
+#define SDIO_STA_CMDACT_Pos		11
+#define SDIO_STA_CMDACT_Msk		((uint32_t)1 << SDIO_STA_CMDACT_Pos)
+#define SDIO_STA_TXACT_Pos		12
+#define SDIO_STA_TXACT_Msk		((uint32_t)1 << SDIO_STA_TXACT_Pos)
+#define SDIO_STA_RXACT_Pos		13
+#define SDIO_STA_RXACT_Msk		((uint32_t)1 << SDIO_STA_RXACT_Pos)
+#define SDIO_STA_TXFIFOHE_Pos		14
+#define SDIO_STA_TXFIFOHE_Msk		((uint32_t)1 << SDIO_STA_TXFIFOHE_Pos)
+#define SDIO_STA_RXFIFOHF_Pos		15
+#define SDIO_STA_RXFIFOHF_Msk		((uint32_t)1 << SDIO_STA_RXFIFOHF_Pos)
+#define SDIO_STA_TXFIFOF_Pos		16
+#define SDIO_STA_TXFIFOF_Msk		((uint32_t)1 << SDIO_STA_TXFIFOF_Pos)
+#define SDIO_STA_RXFIFOF_Pos		17
+#define SDIO_STA_RXFIFOF_Msk		((uint32_t)1 << SDIO_STA_RXFIFOF_Pos)
+#define SDIO_STA_TXFIFOE_Pos		18
+#define SDIO_STA_TXFIFOE_Msk		((uint32_t)1 << SDIO_STA_TXFIFOE_Pos)
+#define SDIO_STA_RXFIFOE_Pos		19
+#define SDIO_STA_RXFIFOE_Msk		((uint32_t)1 << SDIO_STA_RXFIFOE_Pos)
+#define SDIO_STA_TXDAVL_Pos		20
+#define SDIO_STA_TXDAVL_Msk		((uint32_t)1 << SDIO_STA_TXDAVL_Pos)
+#define SDIO_STA_RXDAVL_Pos		21
+#define SDIO_STA_RXDAVL_Msk		((uint32_t)1 << SDIO_STA_RXDAVL_Pos)
+#define SDIO_STA_SDIOIT_Pos		22
+#define SDIO_STA_SDIOIT_Msk		((uint32_t)1 << SDIO_STA_SDIOIT_Pos)
+#define SDIO_STA_CEATAEND_Pos		23
+#define SDIO_STA_CEATAEND_Msk		((uint32_t)1 << SDIO_STA_CEATAEND_Pos)
+
+/* SDIO interrupt clear register*/
+#define SDIO_ICR_CCRCFAILC_Pos		0
+#define SDIO_ICR_CCRCFAILC_Msk		((uint32_t)1 << SDIO_ICR_CCRCFAILC_Pos)
+#define SDIO_ICR_DCRCFAILC_Pos		1
+#define SDIO_ICR_DCRCFAILC_Msk		((uint32_t)1 << SDIO_ICR_DCRCFAILC_Pos)
+#define SDIO_ICR_CTIMEOUTC_Pos		2
+#define SDIO_ICR_CTIMEOUTC_Msk		((uint32_t)1 << SDIO_ICR_CTIMEOUTC_Pos)
+#define SDIO_ICR_DTIMEOUTC_Pos		3
+#define SDIO_ICR_DTIMEOUTC_Msk		((uint32_t)1 << SDIO_ICR_DTIMEOUTC_Pos)
+#define SDIO_ICR_TXUNDERRC_Pos		4
+#define SDIO_ICR_TXUNDERRC_Msk		((uint32_t)1 << SDIO_ICR_TXUNDERRC_Pos)
+#define SDIO_ICR_RXOVERRC_Pos		5
+#define SDIO_ICR_RXOVERRC_Msk		((uint32_t)1 << SDIO_ICR_RXOVERRC_Pos)
+#define SDIO_ICR_CMDRENDC_Pos		6
+#define SDIO_ICR_CMDRENDC_Msk		((uint32_t)1 << SDIO_ICR_CMDRENDC_Pos)
+#define SDIO_ICR_CMDSENTC_Pos		7
+#define SDIO_ICR_CMDSENTC_Msk		((uint32_t)1 << SDIO_ICR_CMDSENTC_Pos)
+#define SDIO_ICR_DATAENDC_Pos		8
+#define SDIO_ICR_DATAENDC_Msk		((uint32_t)1 << SDIO_ICR_DATAENDC_Pos)
+#define SDIO_ICR_STBITERRC_Pos		9
+#define SDIO_ICR_STBITERRC_Msk		((uint32_t)1 << SDIO_ICR_STBITERRC_Pos)
+#define SDIO_ICR_DBCKENDC_Pos		10
+#define SDIO_ICR_DBCKENDC_Msk		((uint32_t)1 << SDIO_ICR_DBCKENDC_Pos)
+#define SDIO_ICR_SDIOITC_Pos		22
+#define SDIO_ICR_SDIOITC_Msk		((uint32_t)1 << SDIO_ICR_SDIOITC_Pos)
+#define SDIO_ICR_CEATAENDC_Pos		23
+#define SDIO_ICR_CEATAENDC_Msk		((uint32_t)1 << SDIO_ICR_CEATAENDC_Pos)
+
+/* SDIO mask register */
+#define SDIO_MASK_CCRCFAILIE_Pos	0
+#define SDIO_MASK_CCRCFAILIE_Msk	((uint32_t)1 << SDIO_MASK_CCRCFAILIE_Pos)
+#define SDIO_MASK_DCRCFAILIE_Pos	1
+#define SDIO_MASK_DCRCFAILIE_Msk	((uint32_t)1 << SDIO_MASK_DCRCFAILIE_Pos)
+#define SDIO_MASK_CTIMEOUTIE_Pos	2
+#define SDIO_MASK_CTIMEOUTIE_Msk	((uint32_t)1 << SDIO_MASK_CTIMEOUTIE_Pos)
+#define SDIO_MASK_DTIMEOUTIE_Pos	3
+#define SDIO_MASK_DTIMEOUTIE_Msk	((uint32_t)1 << SDIO_MASK_DTIMEOUTIE_Pos)
+#define SDIO_MASK_TXUNDERRIE_Pos	4
+#define SDIO_MASK_TXUNDERRIE_Msk	((uint32_t)1 << SDIO_MASK_TXUNDERRIE_Pos)
+#define SDIO_MASK_RXOVERRIE_Pos	5
+#define SDIO_MASK_RXOVERRIE_Msk	((uint32_t)1 << SDIO_MASK_RXOVERRIE_Pos)
+#define SDIO_MASK_CMDRENDIE_Pos	6
+#define SDIO_MASK_CMDRENDIE_Msk	((uint32_t)1 << SDIO_MASK_CMDRENDIE_Pos)
+#define SDIO_MASK_CMDSENTIE_Pos	7
+#define SDIO_MASK_CMDSENTIE_Msk	((uint32_t)1 << SDIO_MASK_CMDSENTIE_Pos)
+#define SDIO_MASK_DATAENDIE_Pos	8
+#define SDIO_MASK_DATAENDIE_Msk	((uint32_t)1 << SDIO_MASK_DATAENDIE_Pos)
+#define SDIO_MASK_STBITERRIE_Pos	9
+#define SDIO_MASK_STBITERRIE_Msk	((uint32_t)1 << SDIO_MASK_STBITERRIE_Pos)
+#define SDIO_MASK_DBCKENDIE_Pos	10
+#define SDIO_MASK_DBCKENDIE_Msk	((uint32_t)1 << SDIO_MASK_DBCKENDIE_Pos)
+#define SDIO_MASK_CMDACTIE_Pos		11
+#define SDIO_MASK_CMDACTIE_Msk		((uint32_t)1 << SDIO_MASK_CMDACTIE_Pos)
+#define SDIO_MASK_TXACTIE_Pos		12
+#define SDIO_MASK_TXACTIE_Msk		((uint32_t)1 << SDIO_MASK_TXACTIE_Pos)
+#define SDIO_MASK_RXACTIE_Pos		13
+#define SDIO_MASK_RXACTIE_Msk		((uint32_t)1 << SDIO_MASK_RXACTIE_Pos)
+#define SDIO_MASK_TXFIFOHEIE_Pos	14
+#define SDIO_MASK_TXFIFOHEIE_Msk	((uint32_t)1 << SDIO_MASK_TXFIFOHEIE_Pos)
+#define SDIO_MASK_RXFIFOHFIE_Pos	15
+#define SDIO_MASK_RXFIFOHFIE_Msk	((uint32_t)1 << SDIO_MASK_RXFIFOHFIE_Pos)
+#define SDIO_MASK_TXFIFOFIE_Pos	16
+#define SDIO_MASK_TXFIFOFIE_Msk	((uint32_t)1 << SDIO_MASK_TXFIFOFIE_Pos)
+#define SDIO_MASK_RXFIFOFIE_Pos	17
+#define SDIO_MASK_RXFIFOFIE_Msk	((uint32_t)1 << SDIO_MASK_RXFIFOFIE_Pos)
+#define SDIO_MASK_TXFIFOEIE_Pos	18
+#define SDIO_MASK_TXFIFOEIE_Msk	((uint32_t)1 << SDIO_MASK_TXFIFOEIE_Pos)
+#define SDIO_MASK_RXFIFOEIE_Pos	19
+#define SDIO_MASK_RXFIFOEIE_Msk	((uint32_t)1 << SDIO_MASK_RXFIFOEIE_Pos)
+#define SDIO_MASK_TXDAVLIE_Pos		20
+#define SDIO_MASK_TXDAVLIE_Msk		((uint32_t)1 << SDIO_MASK_TXDAVLIE_Pos)
+#define SDIO_MASK_RXDAVLIE_Pos		21
+#define SDIO_MASK_RXDAVLIE_Msk		((uint32_t)1 << SDIO_MASK_RXDAVLIE_Pos)
+#define SDIO_MASK_SDIOITIE_Pos		22
+#define SDIO_MASK_SDIOITIE_Msk		((uint32_t)1 << SDIO_MASK_SDIOITIE_Pos)
+#define SDIO_MASK_CEATAENDIE_Pos	23
+#define SDIO_MASK_CEATAENDIE_Msk	((uint32_t)1 << SDIO_MASK_CEATAENDIE_Pos)
+
+/* SDIO FIFO counter register */
+#define SDIO_FIFOCNT_FIFOCOUNT_Pos	0
+#define SDIO_FIFOCNT_FIFOCOUNT_Msk	((uint32_t)0xffffff << SDIO_FIFOCNT_FIFOCOUNT_Pos)
+
+#endif                          /* !SDIO_REGS_H */

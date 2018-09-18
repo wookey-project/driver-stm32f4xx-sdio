@@ -1,0 +1,9 @@
+config USR_DRV_SDIO
+  bool  "userspace SDIO driver"
+  default y
+  ---help---
+  Support for STM32F4 SDIO hardware IP.
+config USR_DRV_SDIO_CFLAGS
+  string
+  default " -I../../drivers/socs/stm32f439/sdio/api " if USR_DRV_SDIO
+
