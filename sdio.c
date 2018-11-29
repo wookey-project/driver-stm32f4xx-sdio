@@ -55,18 +55,33 @@ enum DPSM {
 };
 static volatile enum DPSM data_path_state;
 
+#if __GNUG__
+# pragma GCC push_options
+# pragma GCC optimize("O0")
+#endif
+#if __clang__
+# pragma clang optimize off
+#endif
 void write_delay(void)
 {
     for (int i = 0; i < 20; i++) {
-        asm volatile ("nop");
+        // FIXME PTR WTF ????
+     // TODO: not GCC/LLVM portable   volatile asm ("nop\n\t" :::);
     }
 }
+#if __clang__
+# pragma clang optimize on
+#endif
+#if __GNUG__
+# pragma GCC pop_options
+#endif
+
+
 
 /***************************************
  * Command relative functions
  ***************************************/
 
-static volatile int sd_busy = 0;
 int8_t sdio_hw_send_cmd(uint8_t cmd, uint32_t arg, enum sdio_resp_type response)
 {
     uint32_t    tmp = 0;
@@ -378,7 +393,8 @@ uint8_t sdio_early_init(void)
     /*******************************
      * first, SDIO device declaration
      *******************************/
-    device_t    dev = { 0 };
+    device_t    dev;
+    memset((void*)&dev, 0, sizeof(device_t));
     int         dev_desc = 0;
 
     /*
