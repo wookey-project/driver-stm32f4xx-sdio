@@ -99,7 +99,7 @@ int         sdio_finished_or_error();
 void        sdio_hw_init2();
 void        sdio_launch_dma();
 void        sdio_prepare_dma(uint32_t timeout, uint32_t bytes_len,
-                             enum sdio_direction dir);
+                             uint32_t blocksize);
 void        sdio_set_timeout(uint32_t timeout);
 void        sdio_set_irq_handler(uint32_t(*ptr) ());
 void        sdio_wait_for(uint32_t msk);

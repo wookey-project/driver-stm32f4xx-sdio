@@ -80,7 +80,6 @@ int8_t sdio_hw_send_cmd(uint8_t cmd, uint32_t arg, enum sdio_resp_type response)
     tmp |= (response << SDIO_CMD_WAITRESP_Pos) & SDIO_CMD_WAITRESP_Msk;
     tmp |= (cmd << SDIO_CMD_CMDINDEX_Pos) & SDIO_CMD_CMDINDEX_Msk;
     tmp |= 1 << SDIO_CMD_CPSMEN_Pos;
-
     write_delay();
     write_reg_value(r_CORTEX_M_SDIO_CMD, tmp);
     return 0;
@@ -129,7 +128,6 @@ static void power_up(void)
     printf("debut %x\n", (uint32_t) i);
     for (; (i + 1680000) > ii; sys_get_systick(&ii, PREC_CYCLE)) ;
     printf("fin %x\n", (uint32_t) ii);
-    //LOG("Power up !\n");
 }
 
 static void enabling_irqs(void)
@@ -147,9 +145,6 @@ static void enabling_irqs(void)
                  SDIO_MASK_STBITERRIE_Msk |
                  SDIO_MASK_DBCKENDIE_Msk | SDIO_MASK_CMDACTIE_Msk);
 
-    // made by kernel when executing sys_init(INIT_DONE):
-    // NVIC_EnableIRQ(SDIO_IRQn);
-    //LOG("Int enabled\n");
 }
 
 void sdio_hw_init2()
@@ -157,10 +152,6 @@ void sdio_hw_init2()
     uint32_t    tmp;
     cmd_path_state = CPSM_IDLE;
     data_path_state = DPSM_IDLE;
-
-    //set_reg(r_CORTEX_M_SDIO_CLKCR, 150, SDIO_CLKCR_CLKDIV); //FIXME
-    //set_reg(r_CORTEX_M_SDIO_CLKCR, SDIO_CLKCR_WIDBUS_1WIDE_MODE, SDIO_CLKCR_WIDBUS);
-    //LOG("Clock set\n");
 
     tmp = 150 | SDIO_CLKCR_WIDBUS_1WIDE_MODE;
     power_up();
@@ -172,11 +163,9 @@ void sdio_hw_init2()
     //set_reg_bits(r_CORTEX_M_SDIO_CLKCR, SDIO_CLKCR_CLKEN_Msk);
     write_delay();
     write_reg_value(r_CORTEX_M_SDIO_CLKCR, tmp | SDIO_CLKCR_CLKEN_Msk);
-    //LOG("Clock enabled\n");
 
     enabling_irqs();
 
-    //LOG("Driver initialized\n");
 }
 
 /*
@@ -218,8 +207,8 @@ void sdio_hw_set_bus_width(uint8_t value)
 /*****************************************
  * DMA relative functions
  *****************************************/
-void sdio_prepare_dma(uint32_t timeout, uint32_t bytes_len, enum sdio_direction
-                      __attribute__ ((unused)) dir)
+void sdio_prepare_dma(uint32_t timeout, uint32_t bytes_len ,uint32_t blocksize
+      __attribute__((unused)) )
 {
     uint32_t    dctrl = *r_CORTEX_M_SDIO_DCTRL;
 
@@ -228,11 +217,12 @@ void sdio_prepare_dma(uint32_t timeout, uint32_t bytes_len, enum sdio_direction
 
     /* FIXME - (9<<4) means 512 bytes */
     write_reg_value(&dctrl,
-                    (9 << 4) | SDIO_DCTRL_DMAEN_Msk | SDIO_DCTRL_DTMODE_BLOCK);
+                    (9 << 4) | SDIO_DCTRL_DMAEN_Msk
+                    | SDIO_DCTRL_DTMODE_BLOCK);
     set_reg(&dctrl, SDIO_DCTRL_DTMODE_BLOCK, SDIO_DCTRL_DTMODE);
 
     write_delay();
-    write_reg_value(r_CORTEX_M_SDIO_DCTRL, dctrl);
+    *r_CORTEX_M_SDIO_DCTRL=dctrl;
 }
 
 void sdio_launch_dma(int i)
@@ -241,6 +231,8 @@ void sdio_launch_dma(int i)
     set_reg(r_CORTEX_M_SDIO_DCTRL, i, SDIO_DCTRL_DTDIR);
     write_delay();
     set_reg(r_CORTEX_M_SDIO_DCTRL, 1, SDIO_DCTRL_DTEN);
+
+ // write_reg_value(r_CORTEX_M_SDIO_DCTRL,(i<<SDIO_DCTRL_DTDIR_Pos)|1);
 }
 
 /* TODO: check bytes_len (block size aligned ?) */
@@ -251,7 +243,6 @@ void sdio_hw_enable_data_transfer(uint32_t timeout, uint32_t bytes_len,
 {
     uint32_t    dctrl = 0;
 
-    printf("len %x\n", bytes_len);
     write_reg_value(r_CORTEX_M_SDIO_DTIMER, timeout);
     set_reg(r_CORTEX_M_SDIO_DLEN, bytes_len, SDIO_DLEN_DATALENGTH);
 
@@ -278,7 +269,6 @@ void sdio_hw_write_fifo(uint32_t * buf, uint32_t size)
     uint32_t    i;
     for (i = 0; i < size; i++)
         write_reg_value(r_CORTEX_M_SDIO_FIFO, buf[i]);
-    //LOG("FIFO filled (%d words)\n", size);
 }
 
 void sdio_hw_read_fifo(uint32_t * buf, uint32_t size)
@@ -286,7 +276,6 @@ void sdio_hw_read_fifo(uint32_t * buf, uint32_t size)
     uint32_t    i;
     for (i = 0; i < size; i++)
         buf[i] = read_reg_value(r_CORTEX_M_SDIO_FIFO);
-    //LOG("FIFO emptied (%d words)\n", size);
 }
 
 volatile uint32_t *sdio_get_data_addr(void)
@@ -331,7 +320,6 @@ void SDIO_IRQHandler(uint8_t irq __UNUSED,  // IRQ number
 #endif
     savestatus |= sr;
 //  sdio_reset_static_flags();
-//  LOG("IRQHANDLER status %x mask %x\n",status,mask);dbg_flush();
     if (sd_irq_handler)
         sd_irq_handler();
 }
@@ -366,6 +354,20 @@ void sdio_set_timeout(uint32_t timeout)
 {
     write_reg_value(r_CORTEX_M_SDIO_DTIMER, timeout);
 }
+
+/*****************************************
+ *  EXTI Handling
+ *****************************************/
+volatile uint8_t SD_ejection_occured=0;
+
+static void SDIO_Presence_EXTI(uint8_t irq __attribute__ ((unused)) ,
+                        uint32_t status __attribute__ ((unused)),
+                        uint32_t data __attribute__ ((unused)))
+{
+  uint8_t tmp;
+  sys_cfg(CFG_GPIO_GET,(uint8_t)((('C' - 'A') << 4) + 7) , &tmp);
+  SD_ejection_occured|=tmp;
+};
 
 /*****************************************
  * Initialization functions
@@ -429,7 +431,7 @@ uint8_t sdio_early_init(void)
     dev.irqs[0].posthook.action[3].and.mode = 0;    /* ICR |= STA */
 
     /* Now let's configure the GPIOs */
-    dev.gpio_num = 6;
+    dev.gpio_num = 7;
 
     /* SDIO_D[0..3] are on PC8..PC11 */
     for (uint8_t i = 0; i < 4; ++i) {
@@ -479,6 +481,20 @@ uint8_t sdio_early_init(void)
     dev.gpios[5].speed = GPIO_PIN_HIGH_SPEED;
     dev.gpios[5].afr = GPIO_AF_SDIO;
 
+    /*
+    *
+    *  EXTI for SD CARD removal
+    *  On PC7
+    */
+    dev.gpios[6].mask = GPIO_MASK_SET_PUPD |GPIO_MASK_SET_MODE | GPIO_MASK_SET_EXTI;
+    dev.gpios[6].kref.port = GPIO_PC;
+    dev.gpios[6].kref.pin = 7;
+    dev.gpios[6].pupd = GPIO_NOPULL;
+    dev.gpios[6].mode = GPIO_PIN_INPUT_MODE;
+    dev.gpios[6].exti_trigger = GPIO_EXTI_TRIGGER_BOTH;
+    dev.gpios[6].exti_lock = GPIO_EXTI_UNLOCKED;
+    dev.gpios[6].exti_handler = SDIO_Presence_EXTI;
+
     ret = sys_init(INIT_DEVACCESS, &dev, &dev_desc);
 
     return ret;
@@ -487,6 +503,13 @@ uint8_t sdio_early_init(void)
 uint8_t sdio_init(void)
 {
     printf("initializing GPIO block\n");
+    // Test for initial presence of a SD Card.
+    sys_cfg(CFG_GPIO_GET,(uint8_t)((('C' - 'A') << 4) + 7) , &SD_ejection_occured);
+    if(SD_ejection_occured)
+    {
+      printf("NO Card !!!\n");
+
+    }
     /*
      * configure the SDIO device, once it is mapped in task memory
      * This function must be executed *after* sys_init(INIT_DONE).
