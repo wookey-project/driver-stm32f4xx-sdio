@@ -1,8 +1,6 @@
 #include "api/types.h"
 #include "api/print.h"
 #include "api/regutils.h"
-#include "kernel/exported/devices.h"
-#include "kernel/exported/dmas.h"
 #include "api/libsdio.h"
 #include "sdio.h"
 #include "sdio_regs.h"
