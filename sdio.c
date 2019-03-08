@@ -395,7 +395,7 @@ uint8_t sdio_early_init(void)
 
     /* IRQ configuration */
     dev.irqs[0].handler = SDIO_IRQHandler;
-    dev.irqs[0].irq = 65;       /* starting with STACK */
+    dev.irqs[0].irq = SDIO_IRQ;       /* starting with STACK */
     dev.irqs[0].mode = IRQ_ISR_STANDARD;    /* if ISR force MT immediat execution, use FORCE_MAINTHREAD instead of STANDARD, and activate FISR permission */
 
     /*
