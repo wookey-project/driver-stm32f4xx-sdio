@@ -5,6 +5,7 @@
 #include "sdio.h"
 #include "sdio_regs.h"
 #include "api/syscall.h"
+#include "generated/sdio.h"
 
 #ifdef DEBUG_SDIO_INTERRUPTS
 uint32_t    log_status[20];
@@ -431,29 +432,59 @@ uint8_t sdio_early_init(void)
     /* Now let's configure the GPIOs */
     dev.gpio_num = 7;
 
-    /* SDIO_D[0..3] are on PC8..PC11 */
-    for (uint8_t i = 0; i < 4; ++i) {
-        dev.gpios[i].mask =
-            GPIO_MASK_SET_MODE | GPIO_MASK_SET_PUPD | GPIO_MASK_SET_TYPE |
-            GPIO_MASK_SET_SPEED | GPIO_MASK_SET_AFR;
-        dev.gpios[i].kref.port = GPIO_PC;
-        dev.gpios[i].kref.pin = i + 8;
-        dev.gpios[i].mode = GPIO_PIN_ALTERNATE_MODE;
-        dev.gpios[i].pupd = GPIO_NOPULL;
-        dev.gpios[i].type = GPIO_PIN_OTYPER_PP;
-        dev.gpios[i].speed = GPIO_PIN_VERY_HIGH_SPEED;
-        dev.gpios[i].afr = GPIO_AF_SDIO;
-    }
+    /* Configuration of SDIO D[0-3] GPIO */
+    dev.gpios[0].mask =
+      GPIO_MASK_SET_MODE | GPIO_MASK_SET_PUPD | GPIO_MASK_SET_TYPE |
+      GPIO_MASK_SET_SPEED | GPIO_MASK_SET_AFR;
+    dev.gpios[0].kref.port = sdio_dev_infos.gpios[SDIO_D0].port;
+    dev.gpios[0].kref.pin = sdio_dev_infos.gpios[SDIO_D0].pin;
+    dev.gpios[0].mode = GPIO_PIN_ALTERNATE_MODE;
+    dev.gpios[0].pupd = GPIO_NOPULL;
+    dev.gpios[0].type = GPIO_PIN_OTYPER_PP;
+    dev.gpios[0].speed = GPIO_PIN_VERY_HIGH_SPEED;
+    dev.gpios[0].afr = GPIO_AF_SDIO;
 
-    /* SDIO_CK is on PC12 *///FIXME
+    dev.gpios[1].mask =
+      GPIO_MASK_SET_MODE | GPIO_MASK_SET_PUPD | GPIO_MASK_SET_TYPE |
+      GPIO_MASK_SET_SPEED | GPIO_MASK_SET_AFR;
+    dev.gpios[1].kref.port = sdio_dev_infos.gpios[SDIO_D1].port;
+    dev.gpios[1].kref.pin = sdio_dev_infos.gpios[SDIO_D1].pin;
+    dev.gpios[1].mode = GPIO_PIN_ALTERNATE_MODE;
+    dev.gpios[1].pupd = GPIO_NOPULL;
+    dev.gpios[1].type = GPIO_PIN_OTYPER_PP;
+    dev.gpios[1].speed = GPIO_PIN_VERY_HIGH_SPEED;
+    dev.gpios[1].afr = GPIO_AF_SDIO;
+
+    dev.gpios[2].mask =
+      GPIO_MASK_SET_MODE | GPIO_MASK_SET_PUPD | GPIO_MASK_SET_TYPE |
+      GPIO_MASK_SET_SPEED | GPIO_MASK_SET_AFR;
+    dev.gpios[2].kref.port = sdio_dev_infos.gpios[SDIO_D2].port;
+    dev.gpios[2].kref.pin = sdio_dev_infos.gpios[SDIO_D2].pin;
+    dev.gpios[2].mode = GPIO_PIN_ALTERNATE_MODE;
+    dev.gpios[2].pupd = GPIO_NOPULL;
+    dev.gpios[2].type = GPIO_PIN_OTYPER_PP;
+    dev.gpios[2].speed = GPIO_PIN_VERY_HIGH_SPEED;
+    dev.gpios[2].afr = GPIO_AF_SDIO;
+
+    dev.gpios[3].mask =
+      GPIO_MASK_SET_MODE | GPIO_MASK_SET_PUPD | GPIO_MASK_SET_TYPE |
+      GPIO_MASK_SET_SPEED | GPIO_MASK_SET_AFR;
+    dev.gpios[3].kref.port = sdio_dev_infos.gpios[SDIO_D3].port;
+    dev.gpios[3].kref.pin = sdio_dev_infos.gpios[SDIO_D3].pin;
+    dev.gpios[3].mode = GPIO_PIN_ALTERNATE_MODE;
+    dev.gpios[3].pupd = GPIO_NOPULL;
+    dev.gpios[3].type = GPIO_PIN_OTYPER_PP;
+    dev.gpios[3].speed = GPIO_PIN_VERY_HIGH_SPEED;
+    dev.gpios[3].afr = GPIO_AF_SDIO;
+
+    /* Configuration of SDIO_CLK */
     dev.gpios[4].mask =
-        GPIO_MASK_SET_MODE | GPIO_MASK_SET_PUPD | GPIO_MASK_SET_TYPE |
-        GPIO_MASK_SET_SPEED | GPIO_MASK_SET_AFR;
-    dev.gpios[4].kref.port = GPIO_PC;
-    dev.gpios[4].kref.pin = 12;
+      GPIO_MASK_SET_MODE | GPIO_MASK_SET_PUPD | GPIO_MASK_SET_TYPE |
+      GPIO_MASK_SET_SPEED | GPIO_MASK_SET_AFR;
+    dev.gpios[4].kref.port = sdio_dev_infos.gpios[SDIO_CLK].port;
+    dev.gpios[4].kref.pin = sdio_dev_infos.gpios[SDIO_CLK].pin;
     dev.gpios[4].mode = GPIO_PIN_ALTERNATE_MODE;
     dev.gpios[4].pupd = GPIO_NOPULL;
-
     /*
      * push-pull (0) for SD card identification, open-drain (1) for MMC
      * identification (see manual 31.4.4)
@@ -462,12 +493,12 @@ uint8_t sdio_early_init(void)
     dev.gpios[4].speed = GPIO_PIN_HIGH_SPEED;
     dev.gpios[4].afr = GPIO_AF_SDIO;
 
-    /* SDIO_CMD is on PD2 *///FIXME
+    /* configuration of SDIO_CMD  */
     dev.gpios[5].mask =
-        GPIO_MASK_SET_MODE | GPIO_MASK_SET_PUPD | GPIO_MASK_SET_TYPE |
-        GPIO_MASK_SET_SPEED | GPIO_MASK_SET_AFR;
-    dev.gpios[5].kref.port = GPIO_PD;
-    dev.gpios[5].kref.pin = 2;
+      GPIO_MASK_SET_MODE | GPIO_MASK_SET_PUPD | GPIO_MASK_SET_TYPE |
+      GPIO_MASK_SET_SPEED | GPIO_MASK_SET_AFR;
+    dev.gpios[5].kref.port = sdio_dev_infos.gpios[SDIO_CMD].port;
+    dev.gpios[5].kref.pin = sdio_dev_infos.gpios[SDIO_CMD].pin;
     dev.gpios[5].mode = GPIO_PIN_ALTERNATE_MODE;
     dev.gpios[5].pupd = GPIO_NOPULL;
 
@@ -480,13 +511,13 @@ uint8_t sdio_early_init(void)
     dev.gpios[5].afr = GPIO_AF_SDIO;
 
     /*
-    *
-    *  EXTI for SD CARD removal
-    *  On PC7
-    */
+     *
+     *  EXTI for SD CARD removal
+     *
+     */
     dev.gpios[6].mask = GPIO_MASK_SET_PUPD |GPIO_MASK_SET_MODE | GPIO_MASK_SET_EXTI;
-    dev.gpios[6].kref.port = GPIO_PC;
-    dev.gpios[6].kref.pin = 7;
+    dev.gpios[6].kref.port = sdio_dev_infos.gpios[SDIO_RMV].port;
+    dev.gpios[6].kref.pin = sdio_dev_infos.gpios[SDIO_RMV].pin;
     dev.gpios[6].pupd = GPIO_NOPULL;
     dev.gpios[6].mode = GPIO_PIN_INPUT_MODE;
     dev.gpios[6].exti_trigger = GPIO_EXTI_TRIGGER_BOTH;
