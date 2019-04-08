@@ -25,6 +25,12 @@
 #define SDIO_FLAG_CMD_NORESP (SDIO_FLAG_CTIMEOUT|SDIO_FLAG_CCRCFAIL|SDIO_FLAG_CMDSENT)
 #define SDIO_FLAG_DATA (SDIO_FLAG_DCRCFAIL|SDIO_FLAG_DTIMEOUT|SDIO_FLAG_DATAEND|SDIO_FLAG_DBCKEND)
 
+/* SDIO datasheet, timeout is classless defined, 100ms for read access,
+ * 250ms for write access for all high speed class SDCard */
+#define SDIO_READ_TIMEOUT   5000000
+#define SDIO_WRITE_TIMEOUT 12500000
+
+
 
 enum sdio_direction { OUT = 0, IN };
 /*
@@ -91,6 +97,9 @@ void        sdio_launch_dma();
 void        sdio_prepare_dma(uint32_t timeout, uint32_t bytes_len,
                              uint32_t blocksize);
 
+/* set custom SDIO timeout (beware when using timeout values, which may be
+ * too short for valid read, erase or write access, or too long for
+ * correct error handling */
 void        sdio_set_timeout(uint32_t timeout);
 
 void        sdio_set_irq_handler(uint32_t(*ptr) ());
