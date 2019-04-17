@@ -1,7 +1,7 @@
 #ifndef LIBSDIO_H_
 #define LIBSDIO_H_
 
-#include "api/types.h"
+#include "libc/types.h"
 
 #define SDIO_BASE			0x40012C00
 #define r_CORTEX_M_SDIO_CMD		REG_ADDR(SDIO_BASE + 0x0c)

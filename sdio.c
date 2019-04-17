@@ -1,12 +1,12 @@
-#include "api/types.h"
-#include "api/stdio.h"
-#include "api/nostd.h"
-#include "api/string.h"
-#include "api/regutils.h"
+#include "libc/types.h"
+#include "libc/stdio.h"
+#include "libc/nostd.h"
+#include "libc/string.h"
+#include "libc/regutils.h"
 #include "api/libsdio.h"
 #include "sdio.h"
 #include "sdio_regs.h"
-#include "api/syscall.h"
+#include "libc/syscall.h"
 #include "generated/sdio.h"
 
 #ifdef DEBUG_SDIO_INTERRUPTS

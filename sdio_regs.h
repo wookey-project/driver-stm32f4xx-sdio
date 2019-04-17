@@ -1,7 +1,7 @@
 #ifndef SDIO_REGS_H
 #define  SDIO_REGS_H
 
-#include "api/regutils.h"
+#include "libc/regutils.h"
 
 #ifndef SDIO_BASE
 # define SDIO_BASE			0x40012C00

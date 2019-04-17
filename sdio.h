@@ -1,7 +1,7 @@
 #ifndef SDIO_H
 #define  SDIO_H
 
-#include "api/types.h"
+#include "libc/types.h"
 
 enum sd_error { SD_CMD_CRC_FAIL, SD_DATA_CRC_FAIL, SD_CMD_TIMEOUT,
         SD_DATA_TIMEOUT };
