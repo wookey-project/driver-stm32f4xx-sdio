@@ -2,10 +2,7 @@
 #define  SDIO_REGS_H
 
 #include "libc/regutils.h"
-
-#ifndef SDIO_BASE
-# define SDIO_BASE			0x40012C00
-#endif
+#include "generated/sdio.h"
 
 #ifndef r_CORTEX_M_SDIO_CMD
 # define r_CORTEX_M_SDIO_CMD		REG_ADDR(SDIO_BASE + 0x0c)

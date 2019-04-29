@@ -3,8 +3,8 @@
 
 #include "libc/types.h"
 
-#define SDIO_BASE			0x40012C00
-#define r_CORTEX_M_SDIO_CMD		REG_ADDR(SDIO_BASE + 0x0c)
+/* FIXME should not be exported */
+#define r_CORTEX_M_SDIO_CMD		REG_ADDR(0x40012c0c)
 
 #define SDIO_FLAG_CCRCFAIL 0x00000001U
 #define SDIO_FLAG_DCRCFAIL 0x00000002U

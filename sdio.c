@@ -7,7 +7,6 @@
 #include "sdio.h"
 #include "sdio_regs.h"
 #include "libc/syscall.h"
-#include "generated/sdio.h"
 
 #ifdef DEBUG_SDIO_INTERRUPTS
 uint32_t    log_status[20];
