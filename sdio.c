@@ -364,8 +364,13 @@ static void SDIO_Presence_EXTI(uint8_t irq __attribute__ ((unused)) ,
                         uint32_t status __attribute__ ((unused)),
                         uint32_t data __attribute__ ((unused)))
 {
-  uint8_t tmp;
-  sys_cfg(CFG_GPIO_GET,(uint8_t)((('C' - 'A') << 4) + 7) , &tmp);
+  uint8_t tmp,ret;
+  ret=sys_cfg(CFG_GPIO_GET,(uint8_t)(sdio_dev_infos.gpios[SDIO_RMV].port << 4 
+                                     + sdio_dev_infos.gpios[SDIO_RMV].pin) , &tmp);
+  if (ret != SYS_E_DONE) {
+      log_printf("Unable to read EXTI Pin value, ret %s\n", strerror(ret));
+      return;
+  }
   SD_ejection_occured|=tmp;
 };
 
