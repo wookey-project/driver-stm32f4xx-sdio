@@ -539,7 +539,9 @@ uint8_t sdio_init(void)
 {
     printf("initializing GPIO block\n");
     // Test for initial presence of a SD Card.
-    sys_cfg(CFG_GPIO_GET,(uint8_t)((('C' - 'A') << 4) + 7) , (uint8_t*)&SD_ejection_occured);
+    uint8_t value;
+    sys_cfg(CFG_GPIO_GET,(uint8_t)((('C' - 'A') << 4) + 7) , (uint8_t*)&value);
+    SD_ejection_occured = value;
     if(SD_ejection_occured)
     {
       printf("NO Card !!!\n");
