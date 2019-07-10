@@ -5,7 +5,7 @@
 #include "generated/sdio.h"
 
 #ifndef r_CORTEX_M_SDIO_CMD
-# define r_CORTEX_M_SDIO_CMD		REG_ADDR(SDIO_BASE + 0x0c)
+#define r_CORTEX_M_SDIO_CMD		REG_ADDR(SDIO_BASE + 0x0c)
 #endif
 #define r_CORTEX_M_SDIO_POWER		REG_ADDR(SDIO_BASE + 0x00)
 #define r_CORTEX_M_SDIO_CLKCR		REG_ADDR(SDIO_BASE + 0x04)
@@ -241,4 +241,4 @@
 #define SDIO_FIFOCNT_FIFOCOUNT_Pos	0
 #define SDIO_FIFOCNT_FIFOCOUNT_Msk	((uint32_t)0xffffff << SDIO_FIFOCNT_FIFOCOUNT_Pos)
 
-#endif                          /* !SDIO_REGS_H */
+#endif /* !SDIO_REGS_H */
