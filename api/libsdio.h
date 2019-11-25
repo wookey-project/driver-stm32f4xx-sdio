@@ -97,6 +97,8 @@ void        sdio_launch_dma();
 void        sdio_prepare_dma(uint32_t timeout, uint32_t bytes_len,
                              uint32_t blocksize);
 
+void        sdio_prepare_nodma(uint32_t timeout, uint32_t bytes_len,
+                             uint32_t blocksize);
 /* set custom SDIO timeout (beware when using timeout values, which may be
  * too short for valid read, erase or write access, or too long for
  * correct error handling */
@@ -111,5 +113,6 @@ void        sdio_set_irq_handler(uint32_t(*ptr) ());
  */
 volatile uint32_t *sdio_get_data_addr(void);
 
+void sdio_hw_write_fifo(uint32_t * buf, uint32_t size);
 
 #endif /*!LIBSDIO_H_*/

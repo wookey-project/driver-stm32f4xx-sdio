@@ -210,7 +210,7 @@ void sdio_hw_set_bus_width(uint8_t value)
 /*****************************************
  * DMA relative functions
  *****************************************/
-void sdio_prepare_dma(uint32_t timeout, uint32_t bytes_len, uint32_t blocksize
+void sdio_prepare_nodma(uint32_t timeout, uint32_t bytes_len, uint32_t blocksize
                       __attribute__((unused)))
 {
     uint32_t dctrl = *r_CORTEX_M_SDIO_DCTRL;
@@ -218,6 +218,22 @@ void sdio_prepare_dma(uint32_t timeout, uint32_t bytes_len, uint32_t blocksize
     write_reg_value(r_CORTEX_M_SDIO_DTIMER, timeout);
     set_reg(r_CORTEX_M_SDIO_DLEN, bytes_len, SDIO_DLEN_DATALENGTH);
 
+    /* FIXME - (9<<4) means 512 bytes */
+    write_reg_value(&dctrl,
+                    (9 << 4)  | SDIO_DCTRL_DTMODE_BLOCK);
+    //set_reg(&dctrl, SDIO_DCTRL_DTMODE_BLOCK, SDIO_DCTRL_DTMODE);
+
+    write_delay();
+    write_delay();
+    *r_CORTEX_M_SDIO_DCTRL = dctrl;
+}
+void sdio_prepare_dma(uint32_t timeout, uint32_t bytes_len, uint32_t blocksize
+                      __attribute__((unused)))
+{
+    uint32_t dctrl = *r_CORTEX_M_SDIO_DCTRL;
+
+    write_reg_value(r_CORTEX_M_SDIO_DTIMER, timeout);
+    set_reg(r_CORTEX_M_SDIO_DLEN, bytes_len, SDIO_DLEN_DATALENGTH);
     /* FIXME - (9<<4) means 512 bytes */
     write_reg_value(&dctrl,
                     (9 << 4) | SDIO_DCTRL_DMAEN_Msk | SDIO_DCTRL_DTMODE_BLOCK);
@@ -269,11 +285,15 @@ void sdio_hw_enable_data_transfer(uint32_t timeout, uint32_t bytes_len,
 void sdio_hw_write_fifo(uint32_t * buf, uint32_t size)
 {
     uint32_t i;
-
+printf("sdio_wrtie_fifio %x\n",size);
     for (i = 0; i < size; i++)
-        write_reg_value(r_CORTEX_M_SDIO_FIFO, buf[i]);
+    {
+      printf("SDIO_DCOuNT %x SDIO_FIFO_COUNT %x\n",*(uint32_t*)0x40012c30,*(volatile uint32_t*)0x40012c48);
+      printf("j'ecris dans la fifo %x\n",buf[i]);  
+      *(r_CORTEX_M_SDIO_FIFO)=buf[i];
+    }
+      printf("SDIO_DCOuNT %x SDIO_FIFO_COUNT %x\n",*(uint32_t*)0x40012c30,*(volatile uint32_t*)0x40012c48);
 }
-
 void sdio_hw_read_fifo(uint32_t * buf, uint32_t size)
 {
     uint32_t i;
@@ -555,14 +575,16 @@ uint8_t sdio_init(void)
 {
     printf("initializing GPIO block\n");
     // Test for initial presence of a SD Card.
+#ifndef CONFIG_USR_DRV_SDIO_EMMC
     uint8_t value;
-
-    sys_cfg(CFG_GPIO_GET, (uint8_t) ((('C' - 'A') << 4) + 7),
+    sys_cfg(CFG_GPIO_GET, (uint8_t) ((sdio_dev_infos.gpios[SDIO_RMV].port<<4)+
+                                     sdio_dev_infos.gpios[SDIO_RMV].pin),
             (uint8_t *) & value);
     SD_ejection_occured = value;
     if (SD_ejection_occured) {
         printf("NO Card !!!\n");
     }
+#endif
     /*
      * configure the SDIO device, once it is mapped in task memory
      * This function must be executed *after* sys_init(INIT_DONE).
