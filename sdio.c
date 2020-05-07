@@ -7,6 +7,7 @@
 #include "sdio.h"
 #include "sdio_regs.h"
 #include "libc/syscall.h"
+#include "libc/sanhandlers.h"
 
 #ifdef DEBUG_SDIO_INTERRUPTS
 uint32_t log_status[20];
@@ -323,8 +324,16 @@ void SDIO_IRQHandler(uint8_t irq __UNUSED,      // IRQ number
 #endif
     savestatus |= sr;
 //  sdio_reset_static_flags();
-    if (sd_irq_handler)
-        sd_irq_handler();
+    if (sd_irq_handler){
+        /* Sanity check of our handler */
+        if(handler_sanity_check((void*)sd_irq_handler)){
+            sys_exit();
+            return;
+	}
+	else{
+            sd_irq_handler();
+        }
+    }
 }
 
 /********************************************
