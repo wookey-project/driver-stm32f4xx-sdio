@@ -326,8 +326,7 @@ void SDIO_IRQHandler(uint8_t irq __UNUSED,      // IRQ number
 //  sdio_reset_static_flags();
     if (sd_irq_handler){
         /* Sanity check of our handler */
-        if(handler_sanity_check((void*)sd_irq_handler)){
-            sys_exit();
+        if(handler_sanity_check_with_panic((physaddr_t)sd_irq_handler)){
             return;
 	}
 	else{
