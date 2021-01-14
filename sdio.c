@@ -129,9 +129,9 @@ static void power_up(void)
      * periods plus two PCLK2 clock periods.
      */
     sys_get_systick(&i, PREC_CYCLE);
-    printf("debut %x\n", (uint32_t) i);
+    printf("start %x\n", (uint32_t) i);
     for (; (i + 1680000) > ii; sys_get_systick(&ii, PREC_CYCLE)) ;
-    printf("fin %x\n", (uint32_t) ii);
+    printf("end %x\n", (uint32_t) ii);
 }
 
 static void enabling_irqs(void)
@@ -285,11 +285,10 @@ void sdio_hw_enable_data_transfer(uint32_t timeout, uint32_t bytes_len,
 void sdio_hw_write_fifo(uint32_t * buf, uint32_t size)
 {
     uint32_t i;
-printf("sdio_wrtie_fifio %x\n",size);
+    printf("sdio_write_fifo %x\n",size);
     for (i = 0; i < size; i++)
     {
       printf("SDIO_DCOuNT %x SDIO_FIFO_COUNT %x\n",*(uint32_t*)0x40012c30,*(volatile uint32_t*)0x40012c48);
-      printf("j'ecris dans la fifo %x\n",buf[i]);  
       *(r_CORTEX_M_SDIO_FIFO)=buf[i];
     }
       printf("SDIO_DCOuNT %x SDIO_FIFO_COUNT %x\n",*(uint32_t*)0x40012c30,*(volatile uint32_t*)0x40012c48);
